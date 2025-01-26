@@ -11,6 +11,8 @@ const guestSchema = new mongoose.Schema({
     unique: true,
     match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
   },
+  nationality: { type: String, required: false },
+  nationalID: { type: String, required: false },
 });
 
 const Guest = mongoose.models?.Guest || mongoose.model("Guest", guestSchema);

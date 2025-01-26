@@ -1,6 +1,7 @@
 "use server";
 
-import { signIn, signOut } from "./auth";
+import { auth, signIn, signOut } from "./auth";
+import Guest from "./models/guests";
 
 // import { auth, signIn, signOut } from "./auth";
 // import { getBookings } from "./data-service";
@@ -8,27 +9,35 @@ import { signIn, signOut } from "./auth";
 // import { revalidatePath } from "next/cache";
 // import { redirect } from "next/navigation";
 
-// export async function updateGuest(formData) {
-//   const session = await auth();
-//   if (!session) throw new Error("You must be logged in");
+export async function updateGuest(formData) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
 
-//   const nationalID = formData.get("nationalID");
-//   const [nationality, countryFlag] = formData.get("nationality").split("%");
+  const nationalID = formData.get("nationalID");
+  const nationality = formData.get("nationality");
+  const name = session.user.name;
+  const email = session.user.email;
 
-//   if (!/^[a-zA-Z0-9]{6,12}$/.test(nationalID))
-//     throw new Error("Please provide a valid national ID");
+  if (!/^[a-zA-Z0-9]{6,12}$/.test(nationalID))
+    throw new Error("Please provide a valid national ID");
 
-//   const updateData = { nationality, countryFlag, nationalID };
+  const updateData = { nationality, nationalID, name, email };
 
-//   const { data, error } = await supabase
-//     .from("guests")
-//     .update(updateData)
-//     .eq("id", session.user.guestId);
+  const updatedGuest = await Guest.updateOne(
+    {
+      email: session.user.email,
+    },
+    updateData
+  );
 
-//   if (error) throw new Error("Guest could not be updated");
 
-//   revalidatePath("/account/profile");
-// }
+  if (!updatedGuest) {
+    console.log("guest not found");
+    return;
+  }
+
+  // revalidatePath("/account/profile");
+}
 
 // export async function createBooking(bookingData, formData) {
 //   const session = await auth();

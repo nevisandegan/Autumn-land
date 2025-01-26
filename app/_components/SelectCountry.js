@@ -1,22 +1,23 @@
 "use server";
 
-async function SelectCountry({ defaultCountry, name, id, className }) {
+async function SelectCountry({ defaultCountry, name, id, className,guest }) {
   const res = await fetch("https://restcountries.com/v2/all?fields=name,flag");
+
   const countries = await res.json();
 
-  const flag =
-    countries.find((country) => country.name === defaultCountry)?.flag ?? "";
+
+
 
   return (
     <select
       name={name}
       id={id}
-      defaultValue={`${defaultCountry}%${flag}`}
+      defaultValue={guest.nationality ?? defaultCountry}
       className={className}
     >
       <option value="">Select country...</option>
       {countries.map((c) => (
-        <option key={c.name} value={`${c.name}%${c.flag}`}>
+        <option key={c.name} value={c.name}>
           {c.name}
         </option>
       ))}
